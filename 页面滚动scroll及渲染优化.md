@@ -7,7 +7,7 @@
 ## 页面滚动与渲染的关系
 在chrome下一个Web页面会经历几个步骤:
 
- 1. JvaScript
+ 1. JavaScript
  2. Style：
     计算样式,确定了每个 DOM 元素上该应用什么 CSS 样式规则。
  3. Layout
@@ -26,17 +26,17 @@
 ### 防抖(Debouncing)
 
 ```
-    function Debouncing(fn,delay){
-        let timer = null;
-        return function(){
-            let context = this;
-            let args = arguments;
-            clearTimeout(timer);
-            timer = setTimeout(function(){
-                fn.apply(context,args);
-            },delay)
+        function Debouncing(fn,delay){
+            let timer = null;
+            return function(){
+                let context = this;
+                let args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function(){
+                    fn.apply(context,args);
+                },delay)
+            }
         }
-    }
 ```
 当下一次再执行函数时,先把之前的清除之后,再开启新的定时器继而执行fn,这样在一定的时间内,规定事件函数被触发的次数。
 
@@ -45,23 +45,23 @@
 
 在这样的前提下,希望即使页面不断滚动,但是滚动函数也可以按照一定的频率触发,这就需要节流函数(Throttling)。允许函数在X毫秒内执行一次。和上一种方法相比最大的不同在于保证在X毫秒内至少执行一次希望出发的事件handler。
 ```
-    function Throttling(func,delay,mustRun){
-		let timer,
-			startTime = new Date();
-		return function(){
-			let context = this,
-				args = arguments,
-				curTime = new Date();
+        function Throttling(func,delay,mustRun){
+	    let timer,
+		startTime = new Date();
+	    return function(){
+		    let context = this,
+			   args = arguments,
+			curTime = new Date();
 
-			clearTimeout(timer);
-			if(curTime - startTime >= mustRun){
-				func.apply(context,args);
-				startTime = curTime;
-			}else{
-				timer = setTimeout(func,delay);
-			}
-		}
-	}
+		    clearTimeout(timer);
+		    if(curTime - startTime >= mustRun){
+			func.apply(context,args);
+			startTime = curTime;
+		    }else{
+			timer = setTimeout(func,delay);
+		    }
+	    }
+        }
 	function realFunc(){
 		console.log("Success");
 	}

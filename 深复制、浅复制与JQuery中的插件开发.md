@@ -8,7 +8,7 @@
 |   数据大小  |   固定大小   |  不固定   |
 |   访问方式  |   通过变量保存的值   |  通过保存的地址访问   |
 
-##浅复制与深复制
+## 浅复制与深复制
 在浅复制时直接将简单类型值分别赋值给target,而如果复制的是对象就不能通过简单的复值来复制。这样做成的结果就是target引用值改变时也会引起原对象的改变。
 
 ### 1.浅复制
@@ -36,33 +36,34 @@
 
 原生方法的基本实现方式:
 ```
-    var objA = {
-		a : "fc",
-		b : "Ig",
-		c : {
-			d(){
-				console.log(1)
-			}
+    	var objA = {
+	    a : "fc",
+	    b : "Ig",
+	    c : {
+		d(){
+		    console.log(1)
 		}
+	    }
 	}
 	function deepCopy(sub,sup){
-        for(var key in sup){
-            if(typeof sup[key] === 'object'){
-                sub[key] = {};
-                //复制到对象上的属性值为基本类型值为止
-                deepCopy(sub[key],sup[key]);
-            }else{
-                sub[key] = sup[key];
-            } 
+	    for(var key in sup){
+	        if(typeof sup[key] === 'object'){
+		    sub[key] = {};
+		    //复制到对象上的属性值为基本类型值为止
+		    deepCopy(sub[key],sup[key]);
+	        }else{
+		    sub[key] = sup[key];
+	        } 
+	    }
+	    return sub;
         }
-    }
 	var objB = {};
 	deepCopy(objB,objA);
 
 	objA.c.d = function(){
 		console.log(2)
 	}
-    //修改源对象上的属性并不会修改目标对象上已经复制的属性
+        //修改源对象上的属性并不会修改目标对象上已经复制的属性
 	objB.c.d();//1
 ```
 
@@ -90,10 +91,10 @@
 3.深复制对象。$.extend(true,obj1,obj2)
 ```
     var obj1 = {first: 1, second: {height: 178, weight: 70}};
-	var obj2 = {second: {height:180, weight: 65, width: 90}, third: 90};
-	$.extend(true,obj1,obj2);
-	console.log(obj1,obj2);
-	//输出结果为:{first: 1, second: Object, third: 90}
+    var obj2 = {second: {height:180, weight: 65, width: 90}, third: 90};
+    $.extend(true,obj1,obj2);
+    console.log(obj1,obj2);
+    //输出结果为:{first: 1, second: Object, third: 90}
 ```
 
 ## 深复制的不同种实现方式
@@ -240,7 +241,7 @@
 综合三种方法来看,JQuery不能复制JSON对象以外的对象。而在lodash中用了大量的代码来实现ES6引入的新标准对象,并且还可以对Date、RegExp进行深复制。单就深复制的实现上来说,lodash的效率和适用范围要优于JQuery。因此可以说lodash是一种更拥抱未来的类库。
 
 
-##JQuery插件
+## JQuery插件
 JQuery插件主要分为两类：1，类级别 2，对象级别
 
  - 类方法。直接使用$类引用,不需要实例化就可使用。类方法在项目中被设置为工具类使用。
