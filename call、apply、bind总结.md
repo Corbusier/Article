@@ -114,5 +114,82 @@ call、apply、bind都可以动态的改变执行上下文,应用的场景也基
  - 不会直接执行函数,这是与前两种方法最大的区别。
 
 ## call和apply的模拟实现
+### 1.
+在函数构造函数原型上添加自定义的方法,并且指定this对象,然后在原型上将指定的函数设为对象的属性,执行该函数后再删除
+```
+    //第一步
+    foo.fn = bar;
+    //第二步
+    foo.fn();
+    //第三步
+    delete foo.fn;
+```
+由此可以得到：
+```
+    Function.prototype.call2 = function(context){
+        //此时this对象还是bar,执行bar时,
+        context.fn = this;
+        context.fn();
+        delete context.fn;
+    }
+    var obj = {
+        value : 1
+    }
+    function bar(){
+        console.log(this.value);
+    }
+    bar.call2(obj);//1
+```
+在call2的内部将bar函数赋值给obj构造出来的一个属性,这时的再执行的过程相当于:
+```
+    obj.fn = bar = function(){console.log(this.value)};
+    obj.fn = function(){console.log(this.value)};
+    obj.fn();
+    //console.log 1
+    delete obj.fn;
+```
+如果bar传递的参数是不定长度的？
 
- 
+从arguments中取第一个到最后一个参数,因为第0个是arguments的活动对象的前端,此时即obj。
+```
+    Function.prototype.call2 = function(context){
+        context.fn = this;
+        var args = [];
+        for(var i = 1, len = arguments.length; i < len; i++) {
+            args.push('arguments[' + i + ']');
+        }
+        eval('context.fn(' + args +')');
+        delete context.fn;
+    }
+```
+在eval的过程中会自动的调用toString方法。
+还有一个问题是如果第一个参数是null、undefined时,this指向的是window。
+```
+    Function.prototype.call2 = function (context) {
+        var context = context || window;
+        context.fn = this;
+
+        var args = [];
+        for(var i = 1, len = arguments.length; i < len; i++) {
+            args.push('arguments[' + i + ']');
+        }
+
+        var result = eval('context.fn(' + args +')');
+
+        delete context.fn
+        return result;
+    }
+    var obj = {
+        value : 1
+    }
+    var value = 2;
+    function bar(name, age) {
+        console.log(this.value);
+        return {
+            value: this.value,
+            name: name,
+            age: age
+        }
+    }
+    console.log(bar.call2(null,'kevin',18));
+```
