@@ -114,8 +114,8 @@ call、apply、bind都可以动态的改变执行上下文,应用的场景也基
  - 不会直接执行函数,这是与前两种方法最大的区别。
 
 ## call和apply的模拟实现
-### 1.
-在函数构造函数原型上添加自定义的方法,并且指定this对象,然后在原型上将指定的函数设为对象的属性,执行该函数后再删除
+### 1）.
+在函数构造函数原型上添加自定义的方法,并且指定this对象,然后在原型上将指定的函数设为对象的属性,执行该函数后再删除。
 ```
     //第一步
     foo.fn = bar;
@@ -148,6 +148,7 @@ call、apply、bind都可以动态的改变执行上下文,应用的场景也基
     //console.log 1
     delete obj.fn;
 ```
+## 2）.
 如果bar传递的参数是不定长度的？
 
 从arguments中取第一个到最后一个参数,因为第0个是arguments的活动对象的前端,此时即obj。
@@ -163,6 +164,7 @@ call、apply、bind都可以动态的改变执行上下文,应用的场景也基
     }
 ```
 在eval的过程中会自动的调用toString方法。
+## 3）.
 还有一个问题是如果第一个参数是null、undefined时,this指向的是window。
 ```
     Function.prototype.call2 = function (context) {
