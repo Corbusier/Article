@@ -13,7 +13,7 @@
 		Msxml2.ServerXMLHTTP.3.0
 		Msxml2.ServerXMLHTTP.4.0
 		Msxml2.ServerXMLHTTP.5.0
-	    Msxml2.ServerXMLHTTP.6.0
+	    	Msxml2.ServerXMLHTTP.6.0
 		Msxml2.XMLHTTP
 		Msxml2.XMLHTTP.3.0
 		Msxml2.XMLHTTP.4.0
@@ -23,22 +23,22 @@
 		以上的版本中6的功能最强,且更安全,但是只有Vista系统及以上才可使用,4已经被5完全替代,而5是针对Office办公场景的,在没有安装office2003前提下,不一定能使用它。所以3是6的优雅降级版本,适用于Win2k SP4及以上系统。
 ```
     function getXHR(){
-		var xhr = null;
-		if(window.XMLHttpRequest){
-			xhr = new XMLHttpRequest();
-		}else if(window.ActiveXObject){
-    		try{
-    			xhr = new ActiveXObject("Msxml2.XMLHttp");
-    		}catch(e){
-				try{
-					xhr = new ActiveXObject("Microsoft.XMLHttp");
-				}catch(e){
-					alert("您的浏览器暂不支持Ajax!")
-				}
-			}
+	    var xhr = null;
+	    if(window.XMLHttpRequest){
+		    xhr = new XMLHttpRequest();
+	    }else if(window.ActiveXObject){
+	        try{
+		    xhr = new ActiveXObject("Msxml2.XMLHttp");
+	        }catch(e){
+			try{
+			    xhr = new ActiveXObject("Microsoft.XMLHttp");
+			}catch(e){
+			    alert("您的浏览器暂不支持Ajax!")
+	            }
 		}
-		return xhr;
-	}
+	    }
+	    return xhr;
+    }
 ```
 ## Ajax有没有破坏JS单线程机制
 一般情况下,浏览器分为以下几个线程:
@@ -49,7 +49,7 @@
  4. HTTP请求线程
 通常情况下,线程间交互以事件形式发生,通过事件回调的方式予以通知,而事件回调又是先入先出的队列形式将时间添加到任务队列的末尾,等JS引擎空闲时,再依次执行排队的任务,事件回调包括setTimeout、setInterval,click,ajax异步请求等回调。
 
-        在浏览器中JS引擎线程会循环从任务队列中读取事件并执行,这样的机制被称为Event Loop(时间循环)。
+    在浏览器中JS引擎线程会循环从任务队列中读取事件并执行,这样的机制被称为Event Loop(时间循环)。
         
     对于Ajax请求,先创建对象,在执行open调用send方法至此均为同步执行,直达send内部开始,浏览器为将要发生的网络请求创建了新的HTTP请求线程,它与JS引擎线程相对独立,网络异步请求发送时,JS引擎并不会等到Http收到结果,而是直接顺序向下执行。
 
@@ -84,10 +84,10 @@
 ```
 结果为:
 ```
-xhr.readyState:1
-onloadStart
-这里并不是最先打印出来
-xhr.readyState:4
+    xhr.readyState:1
+    onloadStart
+    这里并不是最先打印出来
+    xhr.readyState:4
 ```
     由此可见并非所有的Ajax请求都是异步的,至少readystatechange回调及loadstart回调都是同步函数。
     
@@ -343,11 +343,12 @@ IE10以上都支持XHR2,对于IE8,9用户使用只对IE有效的的过渡方案�
 
 ## JQuery中的AJAX
 直接封装在JQuery类上的静态方法,JQ所有的ajax请求都是通过该方法实现的。在1.5版本之后的XHR对象实现了promise。
-| 新方法        | 被替代的方法   | 
-| --------   | -----  | 
-| done(function(data,textStatus,jqXHR){})     | success |
-| fail(function(jqXHR,textStatus,errorThrown){})        |   error   | 
-| always(function(data or jqXHR,textStatus,jqXHR or errorThrown){})  |    complete   |
+
+| 新方法      | 被替代的方法   | 
+| ---------   | --------  | 
+| done(function(data,textStatus,jqXHR){})  | success |
+| fail(function(jqXHR,textStatus,errorThrown){}) |   error   | 
+| always(function(data or jqXHR,textStatus,jqXHR or errorThrown){}) |    complete   |
  
 以上的三种方法按照队列函数原则可以分配多个回调。
 
