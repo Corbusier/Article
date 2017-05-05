@@ -352,7 +352,7 @@ IE10以上都支持XHR2,对于IE8,9用户使用只对IE有效的的过渡方案�
  
 以上的三种方法按照队列函数原则可以分配多个回调。
 
-## cookie、localstorage、sessionstorage的联系与区别
+## cookie、localstorage、sessionstorage
 
 ### 共同点
 都可以在浏览器端上储存数据。
@@ -371,6 +371,29 @@ webstorage的两种方式不会参与到通信中,虽然有大小的限制,但�
 
 其中localstorage可以永久保存,除非手动移除,否则手动的移除。
 sessionstorage只在会话阶段有效,之后就失效了,作用域也不相同,在不同的浏览器窗口中,即使是同一个页面,sessionstorage也也不可以共享。而localstorage在所有同源窗口中共享。
+
+### webstorage的用法
+保存数据：localStorage.setItem(key,value);
+读取数据：localStorage.getItem(key);
+删除单个数据：localStorage.removeItem(key);
+删除所有数据：localStorage.clear();
+得到某个索引的key：localStorage.key(index);示例：
+
+#### 监听 storage 事件
+触发事件的时间对象（e 参数值）有几个属性：
+
+ 1. key : 键值。
+ 2. oldValue : 被修改前的值。
+ 3. newValue : 被修改后的值。
+ 4. url : 页面url。
+ 5. storageArea : 被修改的 storage 对象。
+
+对应的处理事件函数：
+```
+    window.addEventListener('storage',function(e){
+        console.log('key='+e.key+',oldValue='+e.oldValue+',newValue='+e.newValue);
+    })
+```
 
 ## AJAX跨域请求
 ### 什么是CORS(cross-origin-resource-sharing)
@@ -448,3 +471,6 @@ JSONP的优点在于可以实现浏览器与服务器之间的双向通信,能�
 
     所有的浏览器都支持长轮询。
 
+----------------------------------------  待续补充  --------------------------------------- 
+
+## csrf、xss概念及如何防范
