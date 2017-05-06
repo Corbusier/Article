@@ -282,4 +282,39 @@ http://babeljs.io/repl/#?babili=false&evaluate=true&lineWrap=false&presets=es201
 ```
 直接通过extends关键字实现类继承,不用像ES5那样担心构造函数继承和原型继承,除此之外还应该注意在Student构造函数上的super方法,这个和ES5中的call方法一样,使超类型在父类型上调用一次。
 
--------------------------  待续  ------------------------
+## for of循环
+数组可以for of循环,而对象不可以
+```
+    var arr = [123,2,3,33,1];
+    var obj = {
+        a : "Messi",
+        age : 25,
+        arr : [
+            "R","C"
+        ]
+    }
+    for(var key of arr/obj){
+        console.log(key)
+    }
+    //undefined is not a function(chrome)
+```
+for of 方法会调用Object原型上的Symbol iterator方法返回一个对象，再依次使用next方法返回对象 
+当done = true时，for of才会停止，否则这个过程会一直进行。更改原型上的这个迭代接口就可以用for-of遍历出对象的键值
+```
+    Object.prototype[Symbol.iterator] = function(){
+        let _this = this;
+        let len = Object.keys(obj);
+        let index = 0;
+        return {
+            next:function(){
+                return index<len.length?{
+                    value : _this[len[index++]],
+                    done : false
+                } : {
+                    value : undefined,
+                    done : true
+                }
+            }
+        }
+    }
+```
