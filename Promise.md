@@ -194,5 +194,5 @@ promise直接抛出一个错误，就被catch方法指定的回调函数捕获
 
 ## 模块系统中使用Promise
 关于Require.js的快速上手参考之前撰写的：
-    [Tool-Instructions](/require.js/快速了解Require.JS.md)
+    [Tool-Instructions](/require.js/userExample01/index.html)
     
