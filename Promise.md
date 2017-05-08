@@ -202,19 +202,21 @@ promise直接抛出一个错误，就被catch方法指定的回调函数捕获
     
 ### 使用Promise的ajax请求
 文件目录如下：
->>ajax
->>> index.html
->>> libs(常用的库)
-    >>>> --- API.js(请求的数据)
-    >>>> --- Jquery.js
-    >>>> --- request.js(请求的方法)
-    >>>> --- require.js
-        
->>> componnets(定义的模块)
-    >>>> --- calendar.js
 
->>> pages
-    >>>> --- index.js(入口文件)
+ajax
+
+    index.html
+    libs(常用的库)
+        API.js(请求的数据)
+        Jquery.js
+        request.js(请求的方法)
+        require.js
+            
+    componnets(定义的模块)
+        calendar.js
+    
+    pages
+        index.js(入口文件)
 
 请求的原理：
     通过加载不同的模块,在libs上的request发出请求获取API上的数据,请求的方法是Jquery中get方法的Promise,返回的也是一个Promise对象。将数据请求和数据处理(calender.js)放在不同的模块中,然后用统一的模块(request.js)管理所有的数据请求。
@@ -381,5 +383,6 @@ Click Me : [Tool-Instructions](https://github.com/Corbusier/Tool-Instructions/tr
     })    
 ```
 本例的代码：
+
 Click Me ： [Tool-Instructions](https://github.com/Corbusier/Tool-Instructions/tree/master/require.js/imgTest)
 
