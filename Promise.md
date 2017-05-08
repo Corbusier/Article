@@ -59,6 +59,10 @@ then会返回一个Promise对象,因此可以采用链式调用分别调用对�
 
 ### Promise中的数据传递
 利用Promise的知识封装一个原生的ajax请求
+
+ajax相关函数获取请点击：
+
+Click Me：[Article](/AJAX相关知识整理.md)
 ```
     var url = 'https://zhuanlan.zhihu.com/p/22890374';
     function getJSON(url){
@@ -190,9 +194,192 @@ promise直接抛出一个错误，就被catch方法指定的回调函数捕获
         console.log('everything is great');
     });
 ```
-总结起来就是,抛出错误要在状态改变之前,并且是由Promise对象直接抛出的错误才可以被之后的catch捕捉到。
+总结就是,抛出错误要在状态改变之前,并且是由Promise对象直接抛出的错误才可以被之后的catch捕捉到。
 
 ## 模块系统中使用Promise
 关于Require.js的快速上手参考之前撰写的：
-    [Tool-Instructions](/require.js/userExample01/index.html)
+    [Tool-Instructions](https://github.com/Corbusier/Tool-Instructions/blob/master/require.js/%E5%BF%AB%E9%80%9F%E4%BA%86%E8%A7%A3Require.JS.md "Require.JS")
     
+### 使用Promise的ajax请求
+文件目录如下：
+>>ajax
+>>> index.html
+>>> libs(常用的库)
+    >>>> --- API.js(请求的数据)
+    >>>> --- Jquery.js
+    >>>> --- request.js(请求的方法)
+    >>>> --- require.js
+        
+>>> componnets(定义的模块)
+    >>>> --- calendar.js
+
+>>> pages
+    >>>> --- index.js(入口文件)
+
+请求的原理：
+    通过加载不同的模块,在libs上的request发出请求获取API上的数据,请求的方法是Jquery中get方法的Promise,返回的也是一个Promise对象。将数据请求和数据处理(calender.js)放在不同的模块中,然后用统一的模块(request.js)管理所有的数据请求。
+    
+在html中要引入require.js
+```
+    // index.js为入口文件
+    <script data-main="./pages/index.js" src="./libs/require.js"></script>
+```
+#### ①.将所有的url放在API模块下统一处理
+```
+    // libs/API.js
+    define(function() {
+        return {
+            dayInfo: 'https://hq.tigerbrokers.com/fundamental/finance_calendar/get_day/2017-04-03',
+            typeInfo: 'https://hq.tigerbrokers.com/fundamental/finance_calendar/getType/2017-03-26/2017-04-15'
+        }
+    })
+```
+#### ②.将所有的数据放在request模块中统一管理
+```
+    define(function(require){
+    
+        var API = require('API');
+        var $ = require('jquery');
+        /*因为jQuery中的get方法也是通过Promise进行了封装,最终返回的是一个Promise对象,
+        因此可以将数据请求与数据处理放在不同的模块,使用一个统一的模块管理所有的数据请求
+        需要的是API中提供的url下的数据,以及ajax的get方法。
+        所以要引入API和jquery,即require('API')和require('jquery');
+        */
+        //获取当天的信息
+        getDayInfo = function() {
+            return $.get(API.dayInfo);
+        }
+        // 获取type信息
+        getTypeInfo = function() {
+            return $.get(API.typeInfo);
+        };
+        return {
+            getDayInfo: getDayInfo,
+            getTypeInfo: getTypeInfo
+        }
+    });
+```
+#### ③.将请求的结果获取并处理
+```
+    //components/calendar.js
+    define(function(require) {
+        var request = require('request');
+    
+        //拿到数据之后,需要处理的组件,可以根据数据render
+        //为了简化,本例只是输出数据,在实际中,拿到数据之后还要进行相应的处理
+    
+        //request.js设置的请求函数,其中包含可以直接使用的Promise对象
+        request.getTypeInfo()
+            .then(function(resp) {
+                //拿到数据,并执行处理操作
+                console.log(resp);
+            })
+        //将数据请求与数据处理分开,有利于可维护性
+    })
+```
+关于以上文件的获取请点击：
+Click Me : [Tool-Instructions](https://github.com/Corbusier/Tool-Instructions/tree/master/require.js/ajax(promise))
+
+### 图片加载
+在实际的运用中,经常需要将一些图片放在块元素中,而如果把宽高限定好,这样会影像图片的美观,有些图片可能会严重的"比例失调"。
+利用require可以写一个image组件来解决这个问题,使图片能够根据自己的宽高逼,合理的缩放。
+
+如果保持这样的修正,那么图片就不会出现失调：
+    
+    高>>宽时,令宽=100%,高自动补位然后overflow:hidden
+    宽>>高时,令高=100%,宽自动补位然后overflow:hidden
+    
+在样式中我们可以针对这两种情况,定义两个class选择器：
+```
+    .img-center img.aspectFill-x {
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .img-center img.aspectFill-y {
+        height: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+```
+获取图片的原始宽高,需要等到图片加载完毕之后才能获取。而当图片已经存在缓存时,则有一个complete属性变成true。那么我们就可以根据这些基础知识,定义一个模块来处理这件事情。
+
+(complete应该少用,当src无效时,对于complete值变化,不同的浏览器表现不一样,并且以complete为true来判断是否触发onload事件并不科学,complete为true的情况有4种,completely available只是其中一种)
+    
+    不考虑兼容性和特殊情况的前提下,本例只作示例使用。
+
+```
+    //components/imageCenter.js
+    define(function(require) {
+    //利用Promise封装一个加载函数,也可以单独放在一个功能模块中进一步优化
+    //complete属性在各个浏览器下表现不同,不建议使用
+    var imageLoad = function(img) {
+        return new Promise(function(resolve, reject) {         
+            if(img.complete) {
+                resolve();
+            }else{
+                img.onload = function(event) {
+                    resolve(event);
+                }
+                img.onerror = function(err) {
+                    reject(err);
+                }
+            }
+        })
+    }
+    //模块name(外部容器,图片的class模式)
+    var imageCenter = function(domList,mode) {
+        domList.forEach(function(item) {
+            /*
+                获取容器下的img容器尺寸200*150,图片实际尺寸比例itemR(设为X) = 4/3
+                图片原始尺寸比例imgR(设为N)
+                假设实际尺寸两项都小于容器,
+                  1)如果高>>宽,应该让宽=100%,高自动补位然后hidden
+                  2)如果宽>>高,应该让高=100%,宽自动补位然后hidden
+                然后给img分别加上对应的class
+              */
+            var img = item.children[0];
+            var itemW = item.offsetWidth;
+            var itemH = item.offsetHeight;
+            var itemR = itemW / itemH;
+            imageLoad(img).then(function() {
+                var imgW = img.naturalWidth;
+                var imgH = img.naturalHeight;
+                var imgR = imgW / imgH;
+                var resultMode = null;
+                switch(mode){
+                    case 'aspectFill':
+                        resultMode = imgR > 1 ? 'aspectFill-x' : 'aspectFill-y';
+                        break;
+                    case 'wspectFill':
+                        resultMode = itemR > imgR ? 'aspectFill-x' : 'aspectFill-y'
+                        break;
+                    default:
+                }
+                $(img).addClass(resultMode);
+            })
+        })
+    }
+    return imageCenter;
+})
+```
+在使用时index.js直接引入并调用即可
+```
+    define(function(require) {
+        /*
+            其他的模块中可以引入jquery
+            需要在index.js下调用imageCenter函数
+            没有进行配置的button模块组件,也可以这样以的形式引入
+            包裹图片的容器
+            传入image的warp标签list，将其中的iamge标签设置为居中
+        */
+        var $ = require('jquery');
+        var imageCenter = require('imageCenter');
+        var imageWrapList = document.querySelectorAll('.img-center');
+        imageCenter(imageWrapList, 'wspectFill');
+    })    
+```
+本例的代码：
+Click Me ： [Tool-Instructions](https://github.com/Corbusier/Tool-Instructions/tree/master/require.js/imgTest)
+
