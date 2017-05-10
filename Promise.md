@@ -200,7 +200,7 @@ promise直接抛出一个错误，就被catch方法指定的回调函数捕获
 关于Require.js的快速上手参考之前撰写的：
     [Tool-Instructions](https://github.com/Corbusier/Tool-Instructions/blob/master/require.js/%E5%BF%AB%E9%80%9F%E4%BA%86%E8%A7%A3Require.JS.md "Require.JS")
     
-### ajax请求
+### ajax
 文件目录如下：
 
 <pre>
