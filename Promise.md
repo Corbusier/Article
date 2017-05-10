@@ -200,7 +200,7 @@ promise直接抛出一个错误，就被catch方法指定的回调函数捕获
 关于Require.js的快速上手参考之前撰写的：
     [Tool-Instructions](https://github.com/Corbusier/Tool-Instructions/blob/master/require.js/%E5%BF%AB%E9%80%9F%E4%BA%86%E8%A7%A3Require.JS.md "Require.JS")
     
-### 使用Promise的ajax请求
+### ajax请求
 文件目录如下：
 
 <pre>
@@ -286,7 +286,7 @@ Click Me : [Tool-Instructions](https://github.com/Corbusier/Tool-Instructions/tr
 
 ### 图片加载
 在实际的运用中,经常需要将一些图片放在块元素中,而如果把宽高限定好,这样会影像图片的美观,有些图片可能会严重的"比例失调"。
-利用require可以写一个image组件来解决这个问题,使图片能够根据自己的宽高逼,合理的缩放。
+利用require可以写一个image组件来解决这个问题,使图片能够根据自己的宽高比,合理的缩放。
 
 如果保持这样的修正,那么图片就不会出现失调：
     
