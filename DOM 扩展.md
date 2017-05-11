@@ -1,4 +1,4 @@
-﻿#DOM 扩展
+﻿# DOM 扩展
     
 ## 1. 选择符API
 
@@ -149,6 +149,7 @@ Document的readyState属性有两个可能的值:
 ```
 
 DOM Level3中还有一种方法也能确定节点间的关系,compareDocumentPosition( ),返回的是该关系的位掩码。该方法接收的参数也是子节点,调用方法的是祖先节点。
+
 |   掩码    |   节点关系  |
 | --------  | ------------|
 | 1         |     无关        |
@@ -157,9 +158,11 @@ DOM Level3中还有一种方法也能确定节点间的关系,compareDocumentPos
 | 8         |     包含        |
 | 16        |     被包含      |
 
-如果检测节点属于被包含关系,那么会返回20(掩码4+掩码16),再执行按位操作会返回非零数值,再转换为布尔值true、false即可判断包含或不包含关系。例子:
+如果检测节点属于被包含关系,那么会返回20(掩码4+掩码16),再执行按位操作会返回非零数值,再转换为布尔值true、false即可判断包含或不包含关系。
+
 ```
     var result = document.documentElement.compareDocumentPosition(document.body);
     alert(!!(result & 16));//true
 ```
+
 如果掩码的结果小于16,那么再执行按位操作就会返回负数,转换布尔值的结果为false,说明节点与另一个节点并非包含关系。
