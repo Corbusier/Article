@@ -1,7 +1,6 @@
 ﻿# AJAX相关知识整理
 
 
----
 ## 全平台兼容的XMLHttpRequest对象
     在标准浏览器中可以使用XMLHttpRequest()创建Ajax请求的对象。
 
@@ -471,6 +470,125 @@ JSONP的优点在于可以实现浏览器与服务器之间的双向通信,能�
 
     所有的浏览器都支持长轮询。
 
-----------------------------------------  待续补充  --------------------------------------- 
 
-## csrf、xss概念及如何防范
+## CSRF攻击
+### CSRF是什么？
+CSRF(Cross Site Request Forgery),中文为跨站点请求伪造。CSRF攻击是攻击者利用用户的身份操作用户帐户的一种攻击方式,attacker在用户登陆目标网站之后,诱使用户访问一个攻击页面,利用目标网站对用户的信任,以用户身份在攻击页面对目标网站发起伪造用户操作的请求,达到攻击的目的。
+
+以下的引用的例子转载于[Web安全值CSRF攻击](http://www.cnblogs.com/lovesong/p/5233195.html)
+
+#### 简单版：
+
+假设博客园有一个加关注的GET接口,而如下的blogUserGuid参数即为关注人的ID
+```
+    http://www.cnblogs.com/mvc/Follow/FollowBlogger.aspx?blogUserGuid=4e8c33d0-77fe-df11-ac81-842b2b196315
+```
+如果在博客文章的内容中写一个img标签
+```
+    <img style="width:0;" src="http://www.cnblogs.com/mvc/Follow/FollowBlogger.aspx?blogUserGuid=4e8c33d0-77fe-df11-ac81-842b2b196315"   />
+```
+那么访问过这篇文章的用户都会自动的关注该ID的用户
+
+#### 升级版
+加入博客园还是有个加关注的接口,但是限制只获取POST请求的数据,这时做一个第三方的页面,其中包含form提交代码,然后通过QQ、邮箱等社交工具传播,诱导用户打开,那么打开过这个页面的用户就会中招了。
+
+```
+    <!DOCTYPE HTML>
+    <html lang="en-US">
+    <head>
+    <title>CSRF SHOW</title>
+    </head>
+         <body>
+              <!--不嵌iframe会跳转-->
+              <iframe style="display:none;">
+                   <form  name="form1" action="http://www.cnblogs.com/mvc/Follow/FollowBlogger.aspx" method="post">
+                        <input type="hidden" name="blogUserGuid" value="4e8c33d0-77fe-df11-ac81-842b2b196315"/>
+                        <input type="submit" value>
+                   </form>
+                   <script>
+                        document.forms.form1.submit();
+                   </script>
+              </iframe>
+         </body>
+    </html>
+```
+如果不加iframe,那么页面会重定向,而这样攻击的隐蔽性显得降低了很多。而如果直接加上iframe,这样也是无效的,因为iframe受限于同源策略,它是无法跨域请求的,在尝试过的所有浏览器中,包括但不限于IE7+、chrome、ff都无法加载iframe的内容,那么form提交也就无效了。如果使用form可以直接跨域post数据,利用一个展示页面内嵌另一个页面的form来post数据可以达到这个目的。示例如下：
+
+展示页面(test)：
+```
+    <!DOCTYPE HTML>
+    <html lang="en-US">
+    <head>
+    <title>CSRF SHOW</title>
+    </head>
+         <body>
+              <iframe style="display:none;" src="test2.html"></iframe>
+         </body>
+    </html>
+```
+隐藏页面(test2)：
+```
+    <!DOCTYPE HTML>
+    <html lang="en-US">
+    <head>
+    <title>CSRF GET</title>
+    <body>
+         <form  name="form1" action="http://www.cnblogs.com/mvc/Follow/FollowBlogger.aspx" method="post">
+              <input type="hidden" name="blogUserGuid" value="4e8c33d0-77fe-df11-ac81-842b2b196315"/>
+              <input type="submit" value>
+         </form>
+         <script>
+              document.forms.form1.submit();
+         </script>
+    </body>
+    </html>
+```
+#### 进阶版
+如果博客园还是有一个加关注的接口,但是已经限制POST,但博文内容是直接贴进HTML(未过滤),那就遭受XSS攻击。只要把上面的代码直接嵌入博文,只要有人打开过这篇博文就会自动的关注,这种组合攻击的方式叫XSRF。
+
+### CSRF攻击的本质原因
+CSRF攻击是源于Web的隐式身份验证机制。Web的身份验证机制虽然可以保证一个请求是来自于某个用户的浏览器,但却无法保证该请求是用户批准发送的。CSRF攻击的一般是由服务端解决。
+
+### CSRF工具的防御手段
+1. 尽量使用POST，限制GET
+
+GET接口太容易被拿来做CSRF攻击，看第一个示例就知道，只要构造一个img标签，而img标签又是不能过滤的数据。接口最好限制为POST使用，GET则无效，降低攻击风险。
+
+当然POST并不是万无一失，攻击者只要构造一个form就可以，但需要在第三方页面做，这样就增加暴露的可能性。
+2. 浏览器Cookie策略
+
+IE6、7、8、Safari会默认拦截第三方本地Cookie（Third-party Cookie）的发送。但是Firefox2、3、Opera、Chrome、Android等不会拦截，所以通过浏览器Cookie策略来防御CSRF攻击不靠谱，只能说是降低了风险。
+
+PS：Cookie分为两种，Session Cookie（在浏览器关闭后，就会失效，保存到内存里），Third-party Cookie（即只有到了Exprie时间后才会失效的Cookie，这种Cookie会保存到本地）。
+
+PS：另外如果网站返回HTTP头包含P3P Header，那么将允许浏览器发送第三方Cookie。
+3. 加验证码
+
+验证码，强制用户必须与应用进行交互，才能完成最终请求。在通常情况下，验证码能很好遏制CSRF攻击。但是出于用户体验考虑，网站不能给所有的操作都加上验证码。因此验证码只能作为一种辅助手段，不能作为主要解决方案。
+4. Referer Check
+
+Referer Check在Web最常见的应用就是“防止图片盗链”。同理，Referer Check也可以被用于检查请求是否来自合法的“源”（Referer值是否是指定页面，或者网站的域），如果都不是，那么就极可能是CSRF攻击。
+
+但是因为服务器并不是什么时候都能取到Referer，所以也无法作为CSRF防御的主要手段。但是用Referer Check来监控CSRF攻击的发生，倒是一种可行的方法。
+5. Anti CSRF Token
+现在业界对CSRF的防御，一致的做法是使用一个Token（Anti CSRF Token）。
+
+例子：
+
+1. 用户访问某个表单页面。
+
+2. 服务端生成一个Token，放在用户的Session中，或者浏览器的Cookie中。
+
+3. 在页面表单附带上Token参数。
+
+4. 用户提交请求后， 服务端验证表单中的Token是否与用户Session（或Cookies）中的Token一致，一致为合法请求，不是则非法请求。
+
+这个Token的值必须是随机的，不可预测的。由于Token的存在，攻击者无法再构造一个带有合法Token的请求实施CSRF攻击。另外使用Token时应注意Token的保密性，尽量把敏感操作由GET改为POST，以form或AJAX形式提交，避免Token泄露。
+
+注意：
+CSRF的Token仅仅用于对抗CSRF攻击。当网站同时存在XSS漏洞时候，那这个方案也是空谈。所以XSS带来的问题，应该使用XSS的防御方案予以解决。
+
+## XSS攻击
+### XSS是什么？
+跨站点脚本（Cross-site scripting，XSS）是一种允许攻击者在另一个用户的浏览器中执行恶意脚本的脚本注入式攻击。
+-------------------------- 待续 ------------------------
