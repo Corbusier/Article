@@ -94,9 +94,11 @@ DOM标准规定的Document节点的子节点可以是DocumentType(文档类型�
 #### 2)文档信息
 第一个是title属性,它是可读可写的。然后是三个与网页请求有关的属性,分别是URL、domain、referrer。URL包含完整的URL、domain只包含页面的域名、referrer保存的是连接到当前页面的那个页面的URL。这三个属性中只有domain是可写的,由于安全方面的限制,设置的值只能是URL中包含的域,否则会报错。如果两个来自不同URL,但有相同域名部分的互相引用的页面,出于安全限制,可能无法通信,将document.domain属性更改为这个字符串,就可以达到目标。
 
-####3)查找元素
-    Document类型提供了两种方法,分别为getElementById()和getElementsByTagName()。如果页面中有多个ID相同的元素,那么只会得到第一个,IE7以下中Id获取元素会有这样的bug,name特性的表单元素(input、textarea、button、select)如果与ID名相同,那么也会被返回。最好的办法就是让name属性与ID不同。
-    第三种方法,也是只有HTMLDocument类型才有的方法,getElementsByName(),为了确保给浏览器发送的值准确无误,name属性都要相同,该方法可以获得所有name属性相同的单选按钮。
+#### 3)查找元素
+
+Document类型提供了两种方法,分别为getElementById()和getElementsByTagName()。如果页面中有多个ID相同的元素,那么只会得到第一个,IE7以下中Id获取元素会有这样的bug,name特性的表单元素(input、textarea、button、select)如果与ID名相同,那么也会被返回。最好的办法就是让name属性与ID不同。
+
+第三种方法,也是只有HTMLDocument类型才有的方法,getElementsByName(),为了确保给浏览器发送的值准确无误,name属性都要相同,该方法可以获得所有name属性相同的单选按钮。
     
 ### 3. Element类型
 Element类型提供了对元素标签名、子节点及特性的访问。Element节点具有以下的特征:
