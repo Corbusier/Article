@@ -24,6 +24,7 @@
  
 ## 性能优化篇
  - [页面滚动及渲染优化](https://github.com/Corbusier/Article/issues/10)
+ - [图片的异步加载与onload函数](https://github.com/Corbusier/Article/issues/13)
 
 ## 网络协议相关篇
 
