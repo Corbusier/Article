@@ -21,6 +21,7 @@
 ## 模块化学习篇
 
  - [Promise应用与模块化尝试](https://github.com/Corbusier/Article/issues/4)
+ - [模块化简略说明](https://github.com/Corbusier/Article/issues/14)
  
 ## 性能优化篇
  - [页面滚动及渲染优化](https://github.com/Corbusier/Article/issues/10)
