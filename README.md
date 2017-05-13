@@ -31,3 +31,6 @@
  
 ## Awesome CSS
  - [CSS居中方式](https://github.com/Corbusier/Article/issues/2)
+ 
+## 调试技巧篇
+ - [Chrome调试技巧](https://github.com/Corbusier/Article/issues/12)
