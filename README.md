@@ -12,7 +12,7 @@
 ##  JQuery扩展篇
 
  - [浅/深复制与插件开发](https://github.com/Corbusier/Article/issues/9)
- - [](https://github.com/Corbusier/Article/issues/15)
+ - [JQuery中的Promise](https://github.com/Corbusier/Article/issues/15)
 
 ## ES6篇
 
