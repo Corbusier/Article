@@ -8,6 +8,7 @@
  - [call/apply/bind总结](https://github.com/Corbusier/Article/issues/5)
  - [作用域链与闭包](https://github.com/Corbusier/Article/issues/6)
  - [事件循环机制](https://github.com/Corbusier/Article/issues/11)
+ - [JavaScript中的this](https://github.com/Corbusier/Article/issues/16)
 
 ##  JQuery扩展篇
 
