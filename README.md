@@ -19,6 +19,7 @@
 
  - [数组去重](https://github.com/Corbusier/Article/issues/7)
  - [ES6基础](https://github.com/Corbusier/Article/issues/3)
+ - [Object.assign](https://github.com/Corbusier/Article/issues/21)
 
 ## 模块化学习篇
 
